@@ -12,6 +12,15 @@
 
   --background: var(--bg-base);
   --foreground: var(--text-light);
+
+  /* New refined tokens */
+  --red-subtle: rgba(255, 30, 30, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 30, 30, 0.3);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 30, 30, 0.15);
+  --transition-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ─── Tailwind v4 theme extension ─── */
@@ -32,7 +41,8 @@
 
 /* ─── Global resets ─── */
 html {
-  scroll-behavior: auto; /* Lenis handles smooth scroll */
+  scroll-behavior: auto;
+  /* Lenis handles smooth scroll */
 }
 
 body {
@@ -40,6 +50,14 @@ body {
   color: var(--text-light);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Selection styling ─── */
+::selection {
+  background: rgba(255, 30, 30, 0.25);
+  color: var(--text-light);
 }
 
 /* ─── Film grain overlay ─── */
@@ -49,9 +67,10 @@ body {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.04;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-size: 128px 128px;
+  mix-blend-mode: overlay;
 }
 
 /* ─── Vignette overlay ─── */
@@ -61,45 +80,286 @@ body {
   inset: 0;
   z-index: 50;
   pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
 }
 
 /* ─── Flame flicker keyframe (fallback for reduced-motion users, GSAP handles main) ─── */
 @keyframes flame-flicker {
-  0%, 100% { opacity: 0.9; transform: scaleY(1) scaleX(1); }
-  25%      { opacity: 1;   transform: scaleY(1.08) scaleX(0.96); }
-  50%      { opacity: 0.85; transform: scaleY(0.95) scaleX(1.04); }
-  75%      { opacity: 0.95; transform: scaleY(1.04) scaleX(0.98); }
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scaleY(1) scaleX(1);
+  }
+  25% {
+    opacity: 1;
+    transform: scaleY(1.08) scaleX(0.96);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scaleY(0.95) scaleX(1.04);
+  }
+  75% {
+    opacity: 0.95;
+    transform: scaleY(1.04) scaleX(0.98);
+  }
 }
 
 /* ─── Scroll hint bounce ─── */
 @keyframes scroll-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(8px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
 }
 
 .scroll-hint-anim {
-  animation: scroll-bounce 2s ease-in-out infinite;
+  animation: scroll-bounce 2.4s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 
 /* ─── Star twinkle ─── */
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50%      { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* ─── Glassmorphism card ─── */
 .glass-card {
-  background: rgba(15, 15, 18, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 30, 30, 0.15);
-  border-radius: 16px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: rgba(15, 15, 18, 0.5);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  transition:
+    border-color 0.4s var(--transition-smooth),
+    box-shadow 0.4s var(--transition-smooth),
+    transform 0.5s var(--transition-smooth),
+    background 0.4s var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
 }
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 30, 30, 0.06),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--transition-smooth);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glass-card:hover::before {
+  opacity: 1;
+}
+
 .glass-card:hover {
-  border-color: rgba(255, 30, 30, 0.45);
-  box-shadow: 0 0 24px rgba(255, 30, 30, 0.12);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.glass-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Hero letter hover interaction ─── */
+.hero-letter {
+  transition:
+    color 0.3s var(--transition-smooth),
+    text-shadow 0.3s var(--transition-smooth);
+  cursor: default;
+}
+
+.hero-letter:hover {
+  color: var(--red-primary);
+  text-shadow: 0 0 30px rgba(255, 30, 30, 0.35), 0 0 60px rgba(255, 30, 30, 0.1);
+}
+
+/* ─── Scroll hint styling ─── */
+.scroll-hint {
+  transition: opacity 0.4s var(--transition-smooth);
+}
+
+.scroll-hint:hover {
+  opacity: 0.6 !important;
+}
+
+.scroll-hint svg {
+  transition: transform 0.3s var(--transition-smooth);
+}
+
+.scroll-hint:hover svg {
+  transform: scale(1.08);
+}
+
+/* ─── Stat card micro-interactions ─── */
+.stat-card {
+  transition:
+    transform 0.5s var(--transition-smooth),
+    border-color 0.4s var(--transition-smooth),
+    box-shadow 0.4s var(--transition-smooth),
+    background 0.4s var(--transition-smooth);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-card .stat-number {
+  transition:
+    transform 0.4s var(--transition-spring),
+    text-shadow 0.4s var(--transition-smooth);
+}
+
+.stat-card:hover .stat-number {
+  transform: scale(1.06);
+  text-shadow: 0 0 20px rgba(255, 30, 30, 0.3);
+}
+
+.stat-card .stat-label {
+  transition:
+    color 0.4s var(--transition-smooth),
+    letter-spacing 0.4s var(--transition-smooth);
+}
+
+.stat-card:hover .stat-label {
+  color: var(--text-light);
+  letter-spacing: 0.15em;
+}
+
+/* ─── Next-section card distinct hover behaviors ─── */
+.next-card {
+  transition:
+    transform 0.5s var(--transition-smooth),
+    border-color 0.4s var(--transition-smooth),
+    box-shadow 0.4s var(--transition-smooth),
+    background 0.4s var(--transition-smooth);
+}
+
+/* Card 1: lifts up */
+.next-card:nth-child(1):hover {
+  transform: translateY(-8px);
+}
+
+/* Card 2: subtle scale */
+.next-card:nth-child(2):hover {
+  transform: scale(1.03);
+}
+
+/* Card 3: lifts + slight rotate */
+.next-card:nth-child(3):hover {
+  transform: translateY(-6px) rotate(0.5deg);
+}
+
+.next-card h3 {
+  transition:
+    color 0.3s var(--transition-smooth),
+    letter-spacing 0.5s var(--transition-smooth);
+}
+
+.next-card:hover h3 {
+  color: var(--red-primary);
+  letter-spacing: 0.04em;
+}
+
+.next-card .card-icon {
+  transition:
+    transform 0.5s var(--transition-spring),
+    color 0.3s var(--transition-smooth);
+}
+
+.next-card:hover .card-icon {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+/* Decorative line that reveals on card hover */
+.next-card .card-line {
+  width: 0;
+  height: 2px;
+  background: var(--red-primary);
+  transition: width 0.5s var(--transition-smooth);
+  border-radius: 1px;
+  margin-top: 12px;
+}
+
+.next-card:hover .card-line {
+  width: 40px;
+}
+
+/* ─── Next section heading hover ─── */
+.next-heading-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.next-heading-accent::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--red-primary);
+  transition: width 0.6s var(--transition-smooth);
+  border-radius: 1px;
+}
+
+.next-heading-accent:hover::after {
+  width: 100%;
+}
+
+/* ─── Cursor dot follow (enhanced feedback) ─── */
+.cursor-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  background: radial-gradient(circle, rgba(255, 30, 30, 0.04) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease;
+  opacity: 0;
+  will-change: transform;
+}
+
+.cursor-glow.active {
+  opacity: 1;
+}
+
+/* ─── Decorative top line animation ─── */
+.section-line {
+  position: relative;
+}
+
+.section-line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 0;
+  background: linear-gradient(to bottom, rgba(255, 30, 30, 0.5), transparent);
+  transition: height 1s var(--transition-smooth);
+}
+
+.section-line.revealed::after {
+  height: 96px;
 }
 
 /* ─── prefers-reduced-motion ─── */
@@ -111,16 +371,43 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  .cursor-glow {
+    display: none;
+  }
+}
+
+/* ─── Touch device graceful degradation ─── */
+@media (hover: none) and (pointer: coarse) {
+  .cursor-glow {
+    display: none;
+  }
+
+  .glass-card::before {
+    display: none;
+  }
+
+  .hero-letter:hover {
+    color: inherit;
+    text-shadow: none;
+  }
 }
 
 /* ─── Custom scrollbar ─── */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-base);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--red-deep);
   border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--red-primary);
 }

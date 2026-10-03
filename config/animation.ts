@@ -106,6 +106,15 @@ export const PARALLAX = {
   backgroundGlow: 0.2,
 } as const;
 
+/* ─── Physical Interaction Parameters ─── */
+export const PHYSICS = {
+  cardTiltMaxDeg: 10,
+  magneticRadiusPx: 75,
+  magneticStrength: 0.3,
+  rocketGimbalMaxDeg: 5.5,
+  rocketGimbalShiftPx: 22,
+} as const;
+
 /* ─── Colors (mirrors CSS vars, for use in GSAP tweens) ─── */
 export const COLORS = {
   redPrimary: "#ff1e1e",
@@ -114,3 +123,4 @@ export const COLORS = {
   white: "#f5f5f5",
   muted: "#8a8a93",
 } as const;
+
